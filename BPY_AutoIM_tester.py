@@ -1,68 +1,68 @@
 import bpy
 
-
+#-----------------------------------------------------#
 #make AutoIM Panel (AutoIM = Auto Instant Mesh)
 
 class AutoIM(bpy.types.Panel):
 
     bl_label = "AutoIM(beta)"
-    bl_idname = "panel_PT_AutoIM"
+    bl_idname = "panel_PT_autoIM"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
     
 #Panel Name
     bl_category = "AutoIM(beta)"
+    bl_context = "objectmode"
     
     
-    def move_cube(self, context) :
-        #make cube
-       bpy.ops.mesh.primitive_cube_add(location = (0.0,0.0,1.0))
-       bpy.ops.transfomr.resize(value=(4,4,4))
-       
-       #Get the Cube object and rename
-       cube = bpy.context.object
-       cube.name = 'Test1'
-       
+
 
 
     def draw(self, context):
         
         layout = self.layout
+        
+        layout.label(text = "AutoIM")
 
-        row = layout.row()
-        row.label(text="AutoIM is the macro for Auto-Retopology with Instant Mesh(Beta)", icon = 'ERROR')
-        row = layout.row()
-        row.operator('button.autoIM', text = "Auto-Retopology")
+        row = layout.row(align = True)
+        row.label(text="AutoIM is a macro for Auto-Retopology with Instant Mesh(Beta)", icon = 'ERROR')
+        row = layout.row(align = True)
+        row.operator(ButtonAutoIM.bl_idname, text = "Auto-Retopology", icon = "CONSOLE")
+         
+      
+#------------------------------------------------------------------------#       
         
-        
-class button_AutoIM(bpy.types.Operator):
-    bl_idnmae = "button.autoIM" #translate to C-name BUTTON_OT_explode
+class ButtonAutoIM(bpy.types.Operator):
+    bl_idname = "object.sample_operator" 
     bl_label = "Button AutoIM"    
-    bl_options = 'PRESET'    
+    
+      
     
     def execute(self, context):
-        #self.report({'INFO'}, "HELLO WORLD")
-        print("AutoIM Started")
+        print("Hi")
         return {'FINISHED'}
         
+#--------------------------------------------------------#
 
 
 
-
-
+#-------------------------------------------------#
 #register the panel with Register()
 
 def register():
-    bpy.utils.register_class(button_AutoIM)
     bpy.utils.register_class(AutoIM)
+    bpy.utils.register_class(ButtonAutoIM)
+    
     
 
 
 def unregister():
-    bpy.utils.unregister_class(button_AutoIM)
     bpy.utils.unregister_class(AutoIM)
+    bpy.utils.unregister_class(ButtonAutoIM)
     
 
 
 if __name__ == "__main__":
     register()
+
+#-------------------------------------------------#
