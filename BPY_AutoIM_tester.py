@@ -25,8 +25,9 @@ class AutoIM(bpy.types.Panel):
         row = layout.row(align = True)
         row.operator(CreateAndExecuteButton.bl_idname, text = "Auto-Retopology", icon = "CONSOLE")
          
-      
-#------------------------------------------------------------------------#       
+ #----------------------------------------------------------------------------------------------------------#     
+ 
+#------------------------Main Execute Part-------------------------------------#       
         
 class CreateAndExecuteButton(bpy.types.Operator):
     bl_idname = "object.button_create" 
@@ -48,6 +49,43 @@ class CreateAndExecuteButton(bpy.types.Operator):
         bpy.ops.object.duplicate(linked=False, mode='TRANSLATION')
         BaseMesh_Duplicated = bpy.context.active_object
         BaseMesh_Duplicated.name = str(BaseMesh)+"_Duplicated"
+      
+      
+   #----------------------BaseMesh_Duplicated Instant Mesh Setting ---------------------#
+   # --------------------you can add more setting after the beta test is over---------- #
+   #------------------------------------------------------------------------------------#
+         
+      # Set the number of crease level in Instant Mesh Setting (Test Default = 4)
+        bpy.ops.object.instant_meshes_remesh(crease=4)
+        
+      # Set the number of Vertex Count in Instant Mesh Setting (Test Default = 4)
+        bpy.ops.object.instant_meshes_remesh(verts=30000)
+        
+    #-------------------Add Setting about Instant Mesh in here-------------------------#
+    
+    
+    
+    #----------------------------------------------------------------------------------#
+        #bpy.ops.object.select_all(action='DESELECT')
+        bpy.ops.object.shade_flat()        
+        bpy.ops.mesh.customdata_custom_splitnormals_clear()
+        
+        bpy.ops.object.data_transfer(use_reverse_transfer=False,use_freeze=False,data_type='UV',use_create=True
+        ,vert_mapping='NEAREST',use_auto_transform=False, use_object_transform= True,use_max_distance=False
+        ,max_distance=1,ray_radius=0, islands_precision=0.1,layers_select_src='ACTIVE',layers_select_dst='ACTIVE'
+        ,mix_mode='REPLACE',mix_factor=1)        
+        
+        bpy.ops.object.instant_meshes_remesh(remeshIt=True)
+     
+      
+        
+        
+        
+    #---------------------------Make UV Map------------------------------------------#
+        bpy.ops.object.editmode_toggle()
+        bpy.ops.uv.smart_project()
+      
+        
         
                
         return {'FINISHED'}
