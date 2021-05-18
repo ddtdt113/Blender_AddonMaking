@@ -37,6 +37,11 @@ class CreateAndExecuteButton(bpy.types.Operator):
        #Announce Button Clicked fcr debug
         print("Start AutoIM(beta)")
         
+        if(bpy.context.mode != 'OBJECT'):
+            bpy.ops.object.mode_set(mode='OBJECT',toggle=True)
+            
+        
+        
        # Get info of Selected Object Name and Transform
         BaseMesh = bpy.context.active_object.name
         BaseMesh_loc = bpy.context.object.location
@@ -49,6 +54,8 @@ class CreateAndExecuteButton(bpy.types.Operator):
         bpy.ops.object.duplicate(linked=False, mode='TRANSLATION')
         BaseMesh_Duplicated = bpy.context.active_object
         BaseMesh_Duplicated.name = str(BaseMesh)+"_Duplicated"
+        
+       # print("BaseMEsh_Duplicated.Name is :", BaseMesh_Duplicated.name)
       
       
    #----------------------BaseMesh_Duplicated Instant Mesh Setting ---------------------#
@@ -81,9 +88,11 @@ class CreateAndExecuteButton(bpy.types.Operator):
         
         
         
-    #---------------------------Make UV Map------------------------------------------#
-        bpy.ops.object.editmode_toggle()
-        bpy.ops.uv.smart_project()
+    #---------------------------Unwrap it-----------------------------------------#
+        RetopoloziedMesh = bpy.data.objects[str(BaseMesh_Duplicated.name)+"_remesh"].select_set(True)
+        print(RetopoloziedMesh)
+        bpy.ops.object.objectmode_toggle()
+        bpy.ops.uv.smart_project(angle_limit=1.15192, island_margin=0.0, correct_aspect=True, scale_to_bounds=False)
       
         
         
