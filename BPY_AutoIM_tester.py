@@ -1,4 +1,5 @@
 import bpy
+import bmesh
 
 #-----------------------------------------------------#
 #make AutoIM Panel (AutoIM = Auto Instant Mesh)
@@ -36,12 +37,7 @@ class CreateAndExecuteButton(bpy.types.Operator):
     def execute(self, context):
        #Announce Button Clicked fcr debug
         print("Start AutoIM(beta)")
-        
-        if(bpy.context.mode != 'OBJECT'):
-            bpy.ops.object.mode_set(mode='OBJECT',toggle=True)
-            
-        
-        
+
        # Get info of Selected Object Name and Transform
         BaseMesh = bpy.context.active_object.name
         BaseMesh_loc = bpy.context.object.location
@@ -54,14 +50,15 @@ class CreateAndExecuteButton(bpy.types.Operator):
         bpy.ops.object.duplicate(linked=False, mode='TRANSLATION')
         BaseMesh_Duplicated = bpy.context.active_object
         BaseMesh_Duplicated.name = str(BaseMesh)+"_Duplicated"
-        
-       # print("BaseMEsh_Duplicated.Name is :", BaseMesh_Duplicated.name)
+       
+      # Debug BaseMEsh_Duplicated.Name
+        print("BaseMesh_Duplicated is :"+ BaseMesh_Duplicated.name)
       
       
    #----------------------BaseMesh_Duplicated Instant Mesh Setting ---------------------#
    # --------------------you can add more setting after the beta test is over---------- #
    #------------------------------------------------------------------------------------#
-         
+          
       # Set the number of crease level in Instant Mesh Setting (Test Default = 4)
         bpy.ops.object.instant_meshes_remesh(crease=4)
         
@@ -73,7 +70,8 @@ class CreateAndExecuteButton(bpy.types.Operator):
     
     
     #----------------------------------------------------------------------------------#
-        #bpy.ops.object.select_all(action='DESELECT')
+               # bpy.ops.object.select_all(action='DESELECT')
+        print("------------------------------Start Retopolozied by Instant Mesh---------------------------------")
         bpy.ops.object.shade_flat()        
         bpy.ops.mesh.customdata_custom_splitnormals_clear()
         
@@ -83,16 +81,26 @@ class CreateAndExecuteButton(bpy.types.Operator):
         ,mix_mode='REPLACE',mix_factor=1)        
         
         bpy.ops.object.instant_meshes_remesh(remeshIt=True)
-     
-      
+        bpy.ops.object.instant_meshes_remesh(remeshIt=False)
         
+        print("------------------------------End Retopolozied by Instant Mesh---------------------------------")
+                            
+    #---------------------------Unwrap it with Smart UV-----------------------------------------#
+        bpy.data.objects[str(BaseMesh_Duplicated.name)+"_remesh"].select_set(True)
         
+        context.view_layer.objects.active = context.scene.objects.get(str(BaseMesh_Duplicated.name)+'_remesh')
         
-    #---------------------------Unwrap it-----------------------------------------#
-        RetopoloziedMesh = bpy.data.objects[str(BaseMesh_Duplicated.name)+"_remesh"].select_set(True)
-        print(RetopoloziedMesh)
-        bpy.ops.object.objectmode_toggle()
+        bpy.ops.object.mode_set(mode='EDIT')
         bpy.ops.uv.smart_project(angle_limit=1.15192, island_margin=0.0, correct_aspect=True, scale_to_bounds=False)
+        bpy.data.objects[str(BaseMesh_Duplicated.name)+'_remesh'].select_set(True)
+        bpy.ops.object.mode_set(mode='OBJECT')
+    
+    #---------------------------Set Texture_bake to the Material----------------------------------------#
+       
+       
+        
+      
+      
       
         
         
