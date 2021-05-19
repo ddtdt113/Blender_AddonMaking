@@ -96,8 +96,9 @@ class CreateAndExecuteButton(bpy.types.Operator):
         bpy.ops.object.mode_set(mode='OBJECT')
     
     #---------------------------Set Texture_bake to the Material----------------------------------------#
-       
-       
+       # bpy.ops.texture.new("Remeshed")
+        #bpy.data.meterials.new("Remeshed_ma")
+   
         
       
       
