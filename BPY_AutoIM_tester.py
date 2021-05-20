@@ -88,7 +88,8 @@ class CreateAndExecuteButton(bpy.types.Operator):
     #---------------------------Unwrap it with Smart UV-----------------------------------------#
         bpy.data.objects[str(BaseMesh_Duplicated.name)+"_remesh"].select_set(True)
         
-        context.view_layer.objects.active = context.scene.objects.get(str(BaseMesh_Duplicated.name)+'_remesh')
+        BaseMesh_remesh = context.scene.objects.get(str(BaseMesh_Duplicated.name)+'_remesh')
+        context.view_layer.objects.active = BaseMesh_remesh
         
         bpy.ops.object.mode_set(mode='EDIT')
         bpy.ops.uv.smart_project(angle_limit=1.15192, island_margin=0.0, correct_aspect=True, scale_to_bounds=False)
@@ -96,9 +97,26 @@ class CreateAndExecuteButton(bpy.types.Operator):
         bpy.ops.object.mode_set(mode='OBJECT')
     
     #---------------------------Set Texture_bake to the Material----------------------------------------#
-       # bpy.ops.texture.new("Remeshed")
-        #bpy.data.meterials.new("Remeshed_ma")
-   
+        
+        mat = bpy.data.materials.get('Material')
+       
+        if mat is None :
+            
+            bpy.data.material.new(name = 'Material')
+            print ('Material and Texture Generated')
+        else :
+            bpy.data.texture.new(name = 'Tx_Remesh')
+            BaseMesh_remesh.data.materials.append(mat)
+            print ('Material Generated')
+            
+        BaseMesh_remesh.active_material.use_nodes = True
+        Shader = mat.node_tree.nodes['Principled BSDF']
+        
+        texImage = mat.node_tree.nodes.new('ShaderNodeTexImage') 
+        texImage.image = bpy.data.texture.new('Tx_Remesh','IMAGE')
+        mat.node_tree.links.new(Shader.inputs['Base Color'], texImage.outputs['Color'])
+        
+        
         
       
       
