@@ -1,5 +1,4 @@
 import bpy
-import bmesh
 
 #-------------------Make Panel---------------------------#
 #make AutoIM Panel (AutoIM = Auto Instant Mesh)
@@ -76,9 +75,10 @@ class CreateAndExecuteButton(bpy.types.Operator):
         bpy.ops.mesh.customdata_custom_splitnormals_clear()
         
         bpy.ops.object.data_transfer(use_reverse_transfer=False,use_freeze=False,data_type='UV',use_create=True
-        ,vert_mapping='NEAREST',use_auto_transform=False, use_object_transform= True,use_max_distance=False
-        ,max_distance=1,ray_radius=0, islands_precision=0.1,layers_select_src='ACTIVE',layers_select_dst='ACTIVE'
-        ,mix_mode='REPLACE',mix_factor=1)        
+                                    ,vert_mapping='NEAREST',use_auto_transform=False, use_object_transform= True
+                                    ,use_max_distance=False ,max_distance=1,ray_radius=0, islands_precision=0.1
+                                    ,layers_select_src='ACTIVE',layers_select_dst='ACTIVE'
+                                    ,mix_mode='REPLACE',mix_factor=1)        
         
         bpy.ops.object.instant_meshes_remesh(crease = 2, verts = vertex_count, openUI=False, remeshIt=True)
         
@@ -98,34 +98,51 @@ class CreateAndExecuteButton(bpy.types.Operator):
         bpy.ops.object.mode_set(mode='OBJECT')
     
     #---------------------------Make and Set Texture to the Material----------------------------------------#
-        
         mat = bpy.data.materials.get('Material')
-        tex = BaseMesh.name + '_Tx_remesh'
+        node = mat.node_tree.nodes['Principled BSDF']
+        tex ='Tx_remesh'
        
     #---------------------------Check Default Material-----------------------------------------------------#
         
-        #bpy.ops.view3d.material_remove_object()
-        
        
+        
+       #Check Material Condtion
         if mat is None :
             bpy.data.materials.new(name = 'Material')
+            print ("Condition mat: mat is none! Add Material")
+            
+                    
         else :
+            print ("Condition mat : mat exist")
             BaseMesh_remesh.data.materials.clear() # delete all Material
         
+        #append material to BaseMesh_remesh          
         BaseMesh_remesh.data.materials.append(mat)
-        print ('Material Generated')
-       
-            
+        print ('Material Generated') 
+              
         BaseMesh_remesh.active_material.use_nodes = True
         Shader = mat.node_tree.nodes['Principled BSDF']
         
+        #Check Node Tree Conndtion 
         
-        texNode = mat.node_tree.nodes.new('ShaderNodeTexImage') 
-        bpy.ops.image.new(name=tex, width=1024, height=1024, color=(0.0, 0.0, 0.0, 1.0), alpha=True, generated_type='BLANK', float=False, use_stereo_3d=False)
-        print(tex+': texture generated')
+               
+        texNode = mat.node_tree.nodes.new('ShaderNodeTexImage')
+        print("Image Node Generated!")
         
-        texImage = bpy.data.images[tex]        
+        
+        #Check Texture Condtion
+        if bpy.data.images.get(tex) is None :
+                  bpy.ops.image.new(name=tex, width=4096, height=4096, color=(0.0, 0.0, 0.0, 1.0)
+                                        , alpha=True, generated_type='BLANK'
+                                        , float=False, use_stereo_3d=False)
+                  print("Condition tex : tex is none!"+tex +': texture generated')
+        else : 
+            print("Condition tex : tex exist!")      
+            
+                      
+        texImage = bpy.data.images[tex]       
         texNode.image = texImage
+        print("texImage is : " + texImage.name)
         
         mat.node_tree.links.new(Shader.inputs['Base Color'], texNode.outputs['Color'])
         print('Shader and Texture Connected')
