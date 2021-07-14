@@ -6,3 +6,4 @@ Blender Addon(.py) Study repository
 '이를 매크로로 만들었습니다.
 
 '꼭 instant mesh.exe파일을 github에 검색하셔서 받으신 후 이용하세요!!
+https://github.com/wjakob/instant-meshes
